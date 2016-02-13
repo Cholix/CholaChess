@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CholaChess
 {
-  class BitBoard
+  public class BitBoard
   {
     //WhitePieces
     public UInt64 WhiteKing;
