@@ -14,46 +14,49 @@ namespace CholaChess
     public static ulong FileH = 9259542123273814144;
 
 
-    public static ulong[] BitBoardPositions;
+    public static ulong[] BitBoardPosition;
 
-    public static ulong[][] KnightAttacks;
+    public static ulong[][] KnightAttack;
+    public static ulong[] KnightAttacks;
 
     static BitBoardConstants()
     {
-      BitBoardPositions = new ulong[64];
-      BitBoardPositions[0] = 1;
+      BitBoardPosition = new ulong[64];
+      BitBoardPosition[0] = 1;
       for (int i = 1; i < 64; i++)
       {
-        BitBoardPositions[i] = BitBoardPositions[0] << i;
+        BitBoardPosition[i] = BitBoardPosition[0] << i;
       }
 
-      KnightAttacks = new ulong[64][];
+      KnightAttack = new ulong[64][];
+      KnightAttacks = new ulong[64];
       for (int i = 0; i < 64; i++)
       {
         List<ulong> attackList = new List<ulong>();
         ulong p;
-        p = BitBoardPositions[i] << 17 & ~FileA;
+        p = BitBoardPosition[i] << 17 & ~FileA;
         if (p != 0) attackList.Add(p);
-        p = BitBoardPositions[i] << 10 & ~(FileA | FileB);
+        p = BitBoardPosition[i] << 10 & ~(FileA | FileB);
         if (p != 0) attackList.Add(p);
-        p = BitBoardPositions[i] >> 6 & ~(FileA | FileB);
+        p = BitBoardPosition[i] >> 6 & ~(FileA | FileB);
         if (p != 0) attackList.Add(p);
-        p = BitBoardPositions[i] >> 15 & ~FileA;
+        p = BitBoardPosition[i] >> 15 & ~FileA;
         if (p != 0) attackList.Add(p);
 
-        p = BitBoardPositions[i] << 15 & ~FileH;
+        p = BitBoardPosition[i] << 15 & ~FileH;
         if (p != 0) attackList.Add(p);
-        p = BitBoardPositions[i] << 6 & ~(FileG | FileH);
+        p = BitBoardPosition[i] << 6 & ~(FileG | FileH);
         if (p != 0) attackList.Add(p);
-        p = BitBoardPositions[i] >> 10 & ~(FileG | FileH);
+        p = BitBoardPosition[i] >> 10 & ~(FileG | FileH);
         if (p != 0) attackList.Add(p);
-        p = BitBoardPositions[i] >> 17 & ~FileH;
+        p = BitBoardPosition[i] >> 17 & ~FileH;
         if (p != 0) attackList.Add(p);
-        /*
-        U64 soWeWe(U64 b) {return (b >> 10) & notGHFile;}
-        U64 soSoWe(U64 b) {return (b >> 17) & notHFile ;}
-         */
-        KnightAttacks[i] = attackList.ToArray();
+
+        KnightAttack[i] = attackList.ToArray();
+        foreach (ulong knightAttack in KnightAttack[i])
+        {
+          KnightAttacks[i] |= knightAttack;
+        }
       }
     }
   }

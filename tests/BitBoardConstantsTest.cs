@@ -32,7 +32,7 @@ namespace CholaChessTest
     {
       for (int i = 0; i < 64; i++)
       {
-        string s = UlongToString(BitBoardConstants.BitBoardPositions[i]);
+        string s = UlongToString(BitBoardConstants.BitBoardPosition[i]);
       }
     }
 
@@ -41,8 +41,8 @@ namespace CholaChessTest
     {
       for (int i = 0; i < 64; i++)
       {
-        ulong[] knightAttacks = BitBoardConstants.KnightAttacks[i];
-        ulong from = BitBoardConstants.BitBoardPositions[i];
+        ulong[] knightAttacks = BitBoardConstants.KnightAttack[i];
+        ulong from = BitBoardConstants.BitBoardPosition[i];
         foreach (ulong ka in knightAttacks)
         {
           from |= ka;         
