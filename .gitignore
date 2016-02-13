@@ -1,1 +1,15 @@
 *.suo
+src/bin/Debug/CholaChess.exe
+src/bin/Debug/CholaChess.exe.config
+src/bin/Debug/CholaChess.vshost.exe
+src/bin/Debug/CholaChess.vshost.exe.config
+src/bin/Debug/CholaChess.pdb
+src/bin/Debug/CholaChess.vshost.exe.manifest
+src/obj/Debug/CholaChess.csproj.FileListAbsolute.txt
+src/obj/Debug/CholaChess.csprojResolveAssemblyReference.cache
+src/obj/Debug/CholaChess.exe
+src/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs
+src/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
+src/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+src/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs
+src/obj/Debug/CholaChess.pdb
