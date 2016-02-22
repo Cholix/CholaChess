@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C3037A75-7C43-4AAF-935E-870F76416FE8}</ProjectGuid>
+    <ProjectGuid>{5B190263-60A0-4437-83BF-55B3BC920F46}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CholaChessTest</RootNamespace>
-    <AssemblyName>CholaChessTest</AssemblyName>
+    <RootNamespace>CholaChessTestTests</RootNamespace>
+    <AssemblyName>CholaChessTestTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -25,7 +25,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,16 +50,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="BitBoard_Test.cs" />
-    <Compile Include="MoveGenerator_Test.cs" />
-    <Compile Include="Position_Test.cs" />
+    <Compile Include="Position_TestTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\CholaChess.csproj">
-      <Project>{dff63316-3cc0-4f38-8fc9-79f08dc9f74e}</Project>
-      <Name>CholaChess</Name>
+    <ProjectReference Include="..\tests\CholaChessTest.csproj">
+      <Project>{C3037A75-7C43-4AAF-935E-870F76416FE8}</Project>
+      <Name>CholaChessTest</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

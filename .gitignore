@@ -1,5 +1,4 @@
 *.suo
-src/bin/Debug/CholaChess.exe
 src/bin/Debug/CholaChess.exe.config
 src/bin/Debug/CholaChess.vshost.exe
 src/bin/Debug/CholaChess.vshost.exe.config
@@ -20,3 +19,10 @@ tests/bin/Debug/CholaChessTest.pdb
 tests/obj/Debug/CholaChessTest.csproj.FileListAbsolute.txt
 tests/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
 tests/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs
+CholaChessTestTests/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
+CholaChessTestTests/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs
+CholaChessTestTests/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs
+CholaChessTestTests/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+tests/obj/Debug/DesignTimeResolveAssemblyReferences.cache
+tests/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs
+tests/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
