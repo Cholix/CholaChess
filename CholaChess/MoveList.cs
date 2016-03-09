@@ -25,5 +25,23 @@ namespace CholaChess
     {
       moves.Add(new Move(p_formSquare, p_toSquare, p_enPassant, 0));
     }
+
+    public int CountMoves
+    {
+      get
+      { 
+        return moves.Count;
+      }
+    }
+
+    public override string ToString()
+    {
+      StringBuilder sb = new StringBuilder();
+      foreach (Move m in moves)
+      {
+        sb.AppendLine(m.ToString());
+      }
+      return sb.ToString();
+    }
   }
 }

@@ -19,7 +19,7 @@ namespace CholaChess
     public override string ToString()
     {
       return
-        fromSquareIndex + "-" + toSquareIndex +
+        Helpers.GetAlgebraicNotationFromSquareIndex(fromSquareIndex) + Helpers.GetAlgebraicNotationFromSquareIndex(toSquareIndex) +
         (enPassantIndex > 0 ? " EnPassant:" + enPassantIndex.ToString() : "") +
         (promoteTo > 0? " Promote to:" + promoteTo.ToString() : "");
     }

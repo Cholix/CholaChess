@@ -43,8 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitBoard.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Move.cs" />
-    <Compile Include="MoveGenerator.cs" />
     <Compile Include="MoveList.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Program.cs" />
