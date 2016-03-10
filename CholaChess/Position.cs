@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CholaChess
 {
@@ -19,10 +16,24 @@ namespace CholaChess
     public int FiftyMovesClock;
     public int HalfMoves;
 
-    /// <summary>
-    /// The FEN string of the starting chess position. 
-    /// </summary>
     public const string FEN_STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+    private Position(Position p_position)
+    {
+      ColorToMove = p_position.ColorToMove;
+      for (int i = 0; i < 16; i++)
+      {
+        Pieces[i] = p_position.Pieces[i];
+      }
+      EnPassant = p_position.EnPassant;
+      for (int i = 0; i < 2; i++)
+      { 
+        CastleKingside[i] = p_position.CastleKingside[i];
+        CastleQueenside[i] = p_position.CastleQueenside[i];
+      }
+      FiftyMovesClock = p_position.FiftyMovesClock;
+      HalfMoves = p_position.HalfMoves;
+    }
 
     public Position(string p_fen)
     {
@@ -137,6 +148,22 @@ namespace CholaChess
       {
         toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref toSquares);
         moveList.AddMove(fromSquareIndex, toSquareIndex);
+      }
+
+      if(CastleQueenside[ColorToMove] 
+        && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex)
+        && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex - 1)
+        && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex - 2))
+      {
+      
+      }
+
+      if (CastleKingside[ColorToMove]
+        && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex)
+        && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex + 1)
+        && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex + 2))
+      {
+
       }
 
       #endregion GenerateKingMoves
@@ -255,27 +282,46 @@ namespace CholaChess
       return moveList;
     }
 
-    //da li je strana koja nije na potezu u šahu
+    public Position MakeMove(int p_fromIndex, int p_toIndex, int p_pieceType, int p_promotionToPieceType)
+    {
+      //TODO Implement MakeMove
+      Position newPosition = new Position(this);
+      newPosition.Pieces[ColorToMove | p_pieceType] &= BitBoard.NegationOfSquare[p_fromIndex];
+      if (p_promotionToPieceType == 0)
+      {
+        newPosition.Pieces[ColorToMove | p_pieceType] |= BitBoard.Square[p_toIndex];
+      }
+      else
+      {
+        newPosition.Pieces[ColorToMove | p_promotionToPieceType] |= BitBoard.Square[p_toIndex];
+      }
+      newPosition.ColorToMove = 1 - newPosition.ColorToMove;
+      newPosition.HalfMoves++;
+      return newPosition;
+    }
+
+    public bool IsSquareAttacked(int p_colorByColor, int p_squareIndex)
+    {
+      if ((Pieces[p_colorByColor | BitBoard.PIECE_TYPE_KNIGHT] & BitBoard.KnightAttack[p_squareIndex]) != 0)
+      {
+        return true;
+      }
+      if ((Pieces[p_colorByColor | BitBoard.PIECE_TYPE_PAWN] & BitBoard.PawnAttack[1 - p_colorByColor, p_squareIndex]) != 0)
+      {
+        return true;
+      }
+      if ((Pieces[p_colorByColor | BitBoard.PIECE_TYPE_KING] & BitBoard.KingAttack[p_squareIndex]) != 0)
+      {
+        return true;
+      }
+      //TODO in IsSquareAttacked check attack by queen, rock and bishop
+      return false;
+    }
+
     public bool IsColorInCheck(int p_color)
     {
-      int opposingColor = 1 - p_color;
-      ulong colorKing = Pieces[p_color | BitBoard.PIECE_TYPE_KING];
-      int colorKingIndex = BitBoard.GetIndexOfFirstBit(colorKing);
-      //Capture by knight
-      if ((Pieces[opposingColor | BitBoard.PIECE_TYPE_KNIGHT] & BitBoard.KnightAttack[colorKingIndex]) != 0)
-      {
-        return true;
-      }
-      if ((Pieces[opposingColor | BitBoard.PIECE_TYPE_PAWN] & BitBoard.PawnAttack[p_color, colorKingIndex]) != 0)
-      {
-        return true;
-      }
-      if ((Pieces[opposingColor | BitBoard.PIECE_TYPE_KING] & BitBoard.KingAttack[colorKingIndex]) != 0)
-      {
-        return true;
-      }
-
-      return false;
+      int indexOfKing = BitBoard.GetIndexOfFirstBit(Pieces[p_color | BitBoard.PIECE_TYPE_KING]);
+      return IsSquareAttacked(1 - p_color, indexOfKing);
     }
 
     public override string ToString()
@@ -340,7 +386,7 @@ namespace CholaChess
           {
             if ((file + rank % 2)%2 == 0)
             {
-              sb.Append("°°");
+              sb.Append("  ");
             }
             else
             {

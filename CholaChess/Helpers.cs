@@ -8,6 +8,16 @@ namespace CholaChess
 {
   public static class Helpers
   {
+    public static int GetRankIndexFromSquareIndex(int p_squareIndex)
+    {
+      return p_squareIndex / 8;
+    }
+
+    public static int GetFileIndexFromSquareIndex(int p_squareIndex)
+    {
+      return p_squareIndex % 8;
+    }
+
     public static int GetSquareIndexFormAlgebraicNotation(string p_algebraicNotation)
     {
       return (int)(p_algebraicNotation[0] - 'a' + (p_algebraicNotation[1] - '1') * 8);
@@ -15,9 +25,9 @@ namespace CholaChess
 
     public static string GetAlgebraicNotationFromSquareIndex(int p_squareIndex)
     {
-      int rank = p_squareIndex / 8;
-      int file = p_squareIndex % 8;
-      return char.ConvertFromUtf32('a' + file) + char.ConvertFromUtf32('1' + rank);
+      int rankIndex = GetRankIndexFromSquareIndex(p_squareIndex);
+      int fileIndex = GetFileIndexFromSquareIndex(p_squareIndex);
+      return char.ConvertFromUtf32('a' + fileIndex) + char.ConvertFromUtf32('1' + rankIndex);
     }
   }
 }
