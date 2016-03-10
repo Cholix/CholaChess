@@ -10,7 +10,6 @@ namespace CholaChess
   {
     static void Main(string[] args)
     { 
-	
     }
   }
 }
