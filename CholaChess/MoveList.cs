@@ -8,7 +8,6 @@ namespace CholaChess
 {
   public class MoveList
   {
-    //TODO privremena implementacija
     List<Move> moves = new List<Move>();
 
     public void AddMove(int p_formSquare, int p_toSquare)
