@@ -37,9 +37,9 @@ namespace CholaChess
     public override string ToString()
     {
       StringBuilder sb = new StringBuilder();
-      foreach (Move m in moves)
+      for (int i = 0; i < moves.Count; i++)
       {
-        sb.AppendLine(m.ToString());
+        sb.Append(i + 1).Append(". ").AppendLine(moves[i].ToString());
       }
       return sb.ToString();
     }
