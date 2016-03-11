@@ -131,22 +131,22 @@ namespace CholaChess
 
       int fromSquareIndex;
       int toSquareIndex;
-      ulong toSquares;
+      ulong bbToSquares;
 
-      ulong myPieces = Pieces[ColorToMove];
-      ulong enemyPieces = Pieces[1 - ColorToMove];
-      ulong notMyPieces = ~myPieces;
-      ulong allPieces = myPieces | enemyPieces;
-      ulong emptySquare = ~allPieces;
+      ulong bbMyPieces = Pieces[ColorToMove];
+      ulong bbEnemyPieces = Pieces[1 - ColorToMove];
+      ulong bbNotMyPieces = ~bbMyPieces;
+      ulong bbAllPieces = bbMyPieces | bbEnemyPieces;
+      ulong bbEmptySquare = ~bbAllPieces;
       int myKingSquareIndex = BitBoard.GetIndexOfFirstBit(Pieces[ColorToMove | BitBoard.PIECE_TYPE_KING]);
       
       #region GenerateKingMoves
 
       fromSquareIndex = myKingSquareIndex;
-      toSquares = BitBoard.KingAttack[myKingSquareIndex] & notMyPieces;
-      while (toSquares != 0)
+      bbToSquares = BitBoard.KingAttack[myKingSquareIndex] & bbNotMyPieces;
+      while (bbToSquares != 0)
       {
-        toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref toSquares);
+        toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
         moveList.AddMove(fromSquareIndex, toSquareIndex);
       }
 
@@ -155,7 +155,7 @@ namespace CholaChess
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex - 1)
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex - 2))
       {
-      
+        moveList.AddMove(myKingSquareIndex, myKingSquareIndex - 2);
       }
 
       if (CastleKingside[ColorToMove]
@@ -163,14 +163,43 @@ namespace CholaChess
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex + 1)
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex + 2))
       {
-
+        moveList.AddMove(myKingSquareIndex, myKingSquareIndex + 2);
       }
 
       #endregion GenerateKingMoves
-      //GenerateCastleMoves();
-      //GenerateQueenMoves();
-      //GenerateRookMoves();
-      //GenerateBishopMoves();
+
+      #region GenerateRook&QueenMoves
+            
+      ulong bbRooksAndQuens = Pieces[ColorToMove | BitBoard.PIECE_TYPE_ROOK] | Pieces[ColorToMove | BitBoard.PIECE_TYPE_QUEEN];
+      while (bbRooksAndQuens != 0)
+      {
+        fromSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbRooksAndQuens);
+        bbToSquares = BitBoard.GetRookAttacks(fromSquareIndex, bbAllPieces) & bbNotMyPieces;
+        while (bbToSquares != 0)
+        {
+          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
+          moveList.AddMove(fromSquareIndex, toSquareIndex);
+        }
+      }
+
+      #endregion GenerateRook&QueenMoves
+
+      #region GenerateBishop&QueenMoves
+
+      ulong bbBishopsAndQuens = Pieces[ColorToMove | BitBoard.PIECE_TYPE_BISHOP] | Pieces[ColorToMove | BitBoard.PIECE_TYPE_QUEEN];
+      while (bbBishopsAndQuens != 0)
+      {
+        fromSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbBishopsAndQuens);
+        bbToSquares = BitBoard.GetBishopAttacks(fromSquareIndex, bbAllPieces) & bbNotMyPieces;
+        while (bbToSquares != 0)
+        {
+          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
+          moveList.AddMove(fromSquareIndex, toSquareIndex);
+        }
+      }
+
+      #endregion GenerateBishop&QueenMoves
+
       #region GenerateKnightMoves
 
       ulong knights = Pieces[ColorToMove | BitBoard.PIECE_TYPE_KNIGHT];
@@ -178,10 +207,10 @@ namespace CholaChess
       while (knights != 0)
       {
         fromSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref knights);
-        toSquares = BitBoard.KnightAttack[fromSquareIndex] & notMyPieces;
-        while (toSquares != 0)
+        bbToSquares = BitBoard.KnightAttack[fromSquareIndex] & bbNotMyPieces;
+        while (bbToSquares != 0)
         {
-          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref toSquares);
+          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
           moveList.AddMove(fromSquareIndex, toSquareIndex);
         }
       }
@@ -196,13 +225,13 @@ namespace CholaChess
       {
         #region White pawn
 
-        toSquares = (pawns << 8) & emptySquare;
-        ulong toSquares2 = ((toSquares & BitBoard.Rank[2]) << 8) & emptySquare;
-        ulong toSquareForPromotion = toSquares & BitBoard.Rank[7];
-        toSquares &= BitBoard.NotRank[7];
-        while (toSquares != 0)
+        bbToSquares = (pawns << 8) & bbEmptySquare;
+        ulong toSquares2 = ((bbToSquares & BitBoard.Rank[2]) << 8) & bbEmptySquare;
+        ulong toSquareForPromotion = bbToSquares & BitBoard.Rank[7];
+        bbToSquares &= BitBoard.NotRank[7];
+        while (bbToSquares != 0)
         {
-          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref toSquares);
+          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
           moveList.AddMove(toSquareIndex - 8, toSquareIndex);
         }
         while (toSquares2 != 0)
@@ -219,16 +248,16 @@ namespace CholaChess
           moveList.AddMovePromotion(toSquareIndex - 8, toSquareIndex, BitBoard.PIECE_TYPE_KNIGHT);
         }
         //attacks
-        toSquares = (pawns << 7) & BitBoard.NotFile[7] & (enemyPieces | EnPassant);
-        while (toSquares != 0)
+        bbToSquares = (pawns << 7) & BitBoard.NotFile[7] & (bbEnemyPieces | EnPassant);
+        while (bbToSquares != 0)
         {
-          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref toSquares);
+          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
           moveList.AddMove(toSquareIndex - 7, toSquareIndex);
         }
-        toSquares = (pawns << 9) & BitBoard.NotFile[0] & (enemyPieces | EnPassant);
-        while (toSquares != 0)
+        bbToSquares = (pawns << 9) & BitBoard.NotFile[0] & (bbEnemyPieces | EnPassant);
+        while (bbToSquares != 0)
         {
-          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref toSquares);
+          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
           moveList.AddMove(toSquareIndex - 9, toSquareIndex);
         }
 
@@ -238,13 +267,13 @@ namespace CholaChess
       {
         #region Black pawn
 
-        toSquares = (pawns >> 8) & emptySquare;
-        ulong toSquares2 = ((toSquares & BitBoard.Rank[5]) >> 8) & emptySquare;
-        ulong toSquareForPromotion = toSquares & BitBoard.Rank[0];
-        toSquares &= BitBoard.NotRank[0];
-        while (toSquares != 0)
+        bbToSquares = (pawns >> 8) & bbEmptySquare;
+        ulong toSquares2 = ((bbToSquares & BitBoard.Rank[5]) >> 8) & bbEmptySquare;
+        ulong toSquareForPromotion = bbToSquares & BitBoard.Rank[0];
+        bbToSquares &= BitBoard.NotRank[0];
+        while (bbToSquares != 0)
         {
-          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref toSquares);
+          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
           moveList.AddMove(toSquareIndex + 8, toSquareIndex);
         }
         while (toSquares2 != 0)
@@ -261,16 +290,16 @@ namespace CholaChess
           moveList.AddMovePromotion(toSquareIndex + 8, toSquareIndex, BitBoard.PIECE_TYPE_KNIGHT);
         }
         //attacks
-        toSquares = (pawns >> 7) & BitBoard.NotFile[0] & (enemyPieces | EnPassant);
-        while (toSquares != 0)
+        bbToSquares = (pawns >> 7) & BitBoard.NotFile[0] & (bbEnemyPieces | EnPassant);
+        while (bbToSquares != 0)
         {
-          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref toSquares);
+          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
           moveList.AddMove(toSquareIndex + 7, toSquareIndex);
         }
-        toSquares = (pawns >> 9) & BitBoard.NotFile[7] & (enemyPieces | EnPassant);
-        while (toSquares != 0)
+        bbToSquares = (pawns >> 9) & BitBoard.NotFile[7] & (bbEnemyPieces | EnPassant);
+        while (bbToSquares != 0)
         {
-          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref toSquares);
+          toSquareIndex = BitBoard.GetIndexOfFirstBitAndRemoveIt(ref bbToSquares);
           moveList.AddMove(toSquareIndex + 9, toSquareIndex);
         }
 
