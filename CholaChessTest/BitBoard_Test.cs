@@ -73,29 +73,5 @@ namespace CholaChessTest
         Debug.Print(s);
       }
     }
-
-    [Fact]
-    public void OccupancyRockMask()
-    {
-      for (int i = 0; i < 64; i++)
-      {
-        ulong om = BitBoard.OccupancyMaskRock[i];
-        Debug.Print("OccupancyRockMask[" + i.ToString() + "]");
-        string s = TestUtilities.UlongToString(om, i);
-        Debug.Print(s);
-      }
-    }
-
-    [Fact]
-    public void OccupancyBishopMask()
-    {
-      for (int i = 0; i < 64; i++)
-      {
-        ulong om = BitBoard.OccupancyMaskBishop[i];
-        Debug.Print("OccupancyBishopMask[" + i.ToString() + "]");
-        string s = TestUtilities.UlongToString(om, i);
-        Debug.Print(s);
-      }
-    }
   }
 }

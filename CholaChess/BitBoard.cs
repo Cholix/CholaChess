@@ -130,53 +130,147 @@ namespace CholaChess
 
       #region Rook, bishop and queen occupancy mask
 
-      for (int bitRef = 0; bitRef < 64; bitRef++)
+      for (int sq = 0; sq < 64; sq++)
       {
         ulong mask = 0;
-        for (int i = bitRef + 8; i <= 55; i += 8)
+        for (int i = sq + 8; i <= 55; i += 8)
         {
           mask |= (1ul << i);
         }
-        for (int i = bitRef - 8; i >= 8; i -= 8)
+        for (int i = sq - 8; i >= 8; i -= 8)
         {
           mask |= (1ul << i);
         }
-        for (int i = bitRef + 1; i % 8 != 7 && i % 8 != 0; i++)
+        for (int i = sq + 1; i % 8 != 7 && i % 8 != 0; i++)
         {
           mask |= (1ul << i);
         }
-        for (int i = bitRef - 1; i % 8 != 7 && i % 8 != 0 && i >= 0; i--)
+        for (int i = sq - 1; i % 8 != 7 && i % 8 != 0 && i >= 0; i--)
         {
           mask |= (1ul << i);
         }
-        occupancyMaskRock[bitRef] = mask;
+        occupancyMaskRook[sq] = mask;
 
         mask = 0;
-        for (int i = bitRef + 9; i % 8 != 7 && i % 8 != 0 && i <= 55; i += 9)
+        for (int i = sq + 9; i % 8 != 7 && i % 8 != 0 && i <= 55; i += 9)
         {
           mask |= (1ul << i);
         }
-        for (int i = bitRef - 9; i % 8 != 7 && i % 8 != 0 && i >= 8; i -= 9)
+        for (int i = sq - 9; i % 8 != 7 && i % 8 != 0 && i >= 8; i -= 9)
         {
           mask |= (1ul << i);
         }
-        for (int i = bitRef + 7; i % 8 != 7 && i % 8 != 0 && i <= 55; i += 7)
+        for (int i = sq + 7; i % 8 != 7 && i % 8 != 0 && i <= 55; i += 7)
         {
           mask |= (1ul << i);
         }
-        for (int i = bitRef - 7; i % 8 != 7 && i % 8 != 0 && i >= 8; i -= 7)
+        for (int i = sq - 7; i % 8 != 7 && i % 8 != 0 && i >= 8; i -= 7)
         {
           mask |= (1ul << i);
         }
-        occupancyMaskBishop[bitRef] = mask;
+        occupancyMaskBishop[sq] = mask;
       }
 
       #endregion Rook, bishop and queen occupancy mask
+
+      #region MagicMovesRook
+
+      for (int sq = 0; sq < 64; sq++)
+      {
+        ulong mask = occupancyMaskRook[sq];
+        int n = CountBits(mask);
+        for (int index = 0; index < (1 << n); index++)
+        {
+          ulong occupancyVariation = Index2Ulong(index, n, mask);
+          int magicMovesIndex = (int)((occupancyVariation * magicNumberRook[sq]) >> magicNumberShiftsRook[sq]);
+          ulong mm = 0;
+          for (int j = sq + 8; j <= 63; j += 8) 
+          { 
+            mm |= (1ul << j); 
+            if ((occupancyVariation & (1ul << j)) != 0) 
+              break; 
+          }
+          for (int j = sq - 8; j >= 0; j -= 8) 
+          { 
+            mm |= (1ul << j); 
+            if ((occupancyVariation & (1ul << j)) != 0) 
+              break; 
+          }
+          for (int j = sq + 1; j % 8 != 0; j++) 
+          { 
+            mm |= (1ul << j); 
+            if ((occupancyVariation & (1ul << j)) != 0) 
+              break; 
+          }
+          for (int j = sq - 1; j % 8 != 7 && j >= 0; j--) 
+          { 
+            mm |= (1ul << j); 
+            if ((occupancyVariation & (1ul << j)) != 0) 
+              break; 
+          }
+          magicMovesRook[sq, magicMovesIndex] = mm;
+        }
+      }
+
+      #endregion MagicMovesRook
+
+      #region MagicMovesBishop
+
+      for (int sq = 0; sq < 64; sq++)
+      {
+        ulong mask = occupancyMaskBishop[sq];
+        int n = CountBits(mask);
+        for (int index = 0; index < (1 << n); index++)
+        {
+          ulong occupancyVariation = Index2Ulong(index, n, mask);
+          int magicMovesIndex = (int)((occupancyVariation * magicNumberBishop[sq]) >> magicNumberShiftsBishop[sq]);
+          ulong mm = 0;
+          for (int j = sq + 9; j % 8 != 0 && j <= 63; j += 9) 
+          { 
+            mm |= (1ul << j); 
+            if ((occupancyVariation & (1ul << j)) != 0) 
+              break; 
+          }
+          for (int j = sq - 9; j % 8 != 7 && j >= 0; j -= 9) 
+          { 
+            mm |= (1ul << j); 
+            if ((occupancyVariation & (1ul << j)) != 0) 
+              break; }
+          for (int j = sq + 7; j % 8 != 7 && j <= 63; j += 7)
+          {
+            mm |= (1ul << j);
+            if ((occupancyVariation & (1ul << j)) != 0)
+              break;
+          }
+          for (int j = sq - 7; j % 8 != 0 && j >= 0; j -= 7)
+          {
+            mm |= (1ul << j);
+            if ((occupancyVariation & (1ul << j)) != 0)
+              break;
+          }
+          
+          magicMovesBishop[sq, magicMovesIndex] = mm;
+        }
+      }
+
+      #endregion MagicMovesBishop
+    }
+
+    static ulong Index2Ulong(int p_index, int p_bits, ulong p_mask)
+    {
+      int i, j;
+      ulong result = 0;
+      for (i = 0; i < p_bits; i++)
+      {
+        j = GetIndexOfFirstBitAndRemoveIt(ref p_mask);
+        if ((p_index & (1 << i)) != 0) result |= (1UL << j);
+      }
+      return result;
     }
 
     #region GetRookAttacks
 
-    static ulong[] occupancyMaskRock = new ulong[64];
+    static ulong[] occupancyMaskRook = new ulong[64];
 
     static ulong[] magicNumberRook = 
     {
@@ -214,7 +308,7 @@ namespace CholaChess
 
     public static ulong GetRookAttacks(int p_fromSquare, ulong p_bbAllPieces)
     {
-      int magicMovesIndex = (int)((p_bbAllPieces & occupancyMaskRock[p_fromSquare]) * magicNumberRook[p_fromSquare]) >> magicNumberShiftsRook[p_fromSquare];
+      int magicMovesIndex = (int)(((p_bbAllPieces & occupancyMaskRook[p_fromSquare]) * magicNumberRook[p_fromSquare]) >> magicNumberShiftsRook[p_fromSquare]);
       return magicMovesRook[p_fromSquare, magicMovesIndex];
     }
 
@@ -260,154 +354,13 @@ namespace CholaChess
 
     public static ulong GetBishopAttacks(int p_fromSquare, ulong p_bbAllPieces)
     {
-      int magicMovesIndex = (int)((p_bbAllPieces & occupancyMaskBishop[p_fromSquare]) * magicNumberBishop[p_fromSquare]) >> magicNumberShiftsBishop[p_fromSquare];
+      int magicMovesIndex = (int)(((p_bbAllPieces & occupancyMaskBishop[p_fromSquare]) * magicNumberBishop[p_fromSquare]) >> magicNumberShiftsBishop[p_fromSquare]);
       return magicMovesBishop[p_fromSquare, magicMovesIndex];
     }
 
     #endregion GetBishopAttacks
 
-
-
-    static ulong[,] occupancyVariation = new ulong[64, 4096];
-    /*
-    public void generateOccupancyVariations(bool isRook)
-    {
-        int i, j, bitRef;
-        ulong mask;
-        int variationCount;
-        int[] setBitsInMask, setBitsInIndex;
-        int[] bitCount = new int[64];
-        
-        for (bitRef=0; bitRef<=63; bitRef++)
-        {
-            mask = isRook ? OccupancyMaskRock[bitRef] : OccupancyMaskBishop[bitRef];
-            setBitsInMask = BitBoard.getSetBits(mask);
-            bitCount[bitRef] = BitBoard.CountBits(mask);
-            variationCount = (int)(1L << bitCount[bitRef]);
-            for (i=0; i<variationCount; i++)
-            {
-                occupancyVariation[bitRef, i] = 0; 
-
-                // find bits set in index "i" and map them to bits in the 64 bit "occupancyVariation"
-
-                setBitsInIndex = BitBoard.getSetBits(i); // an array of integers showing which bits are set
-                for (j=0; setBitsInIndex[j] != -1; j++)
-                {
-                    occupancyVariation[bitRef, i] |= (1L << setBitsInMask[setBitsInIndex[j]]);
-                }
-                
-                if (isRook)
-                {
-                    for (j=bitRef+8; j<=55 && (occupancyVariation[bitRef,i] & (1L << j)) == 0; j+=8);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef,i] |= (1L << j);
-                    for (j=bitRef-8; j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=8);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef,i] |= (1L << j);
-                    for (j=bitRef+1; j%8!=7 && j%8!=0 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j++);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef,i] |= (1L << j);
-                    for (j=bitRef-1; j%8!=7 && j%8!=0 && j>=0 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j--);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef,i] |= (1L << j);
-                }
-                else
-                {
-                    for (j=bitRef+9; j%8!=7 && j%8!=0 && j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=9);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                    for (j=bitRef-9; j%8!=7 && j%8!=0 && j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=9);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                    for (j=bitRef+7; j%8!=7 && j%8!=0 && j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=7);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                    for (j=bitRef-7; j%8!=7 && j%8!=0 && j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=7);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                }
-            }
-        }
-    }
-
-
-    public static void generateMoveDatabase(bool isRook)
-    {
-        ulong validMoves;
-        int variations, bitCount;
-        int bitRef, i, j, magicIndex;
-    
-        for (bitRef=0; bitRef<=63; bitRef++)
-        {
-          bitCount = isRook ? BitBoard.CountBits(OccupancyMaskRock[bitRef]) : BitBoard.CountBits(OccupancyMaskBishop[bitRef]);
-            variations = (int)(1L << bitCount);
-            
-            for (i=0; i<variations; i++)
-            {
-                validMoves = 0;
-                if (isRook)
-                {
-                    magicIndex = (int)((occupancyVariation[bitRef][i] * MagicNumberRook[bitRef]) >> magicNumberShiftsRook[bitRef]);
-
-                    for (j = bitRef + 8; j <= 63; j += 8) 
-                    { 
-                      validMoves |= (1ul << j); 
-                      if ((occupancyVariation[bitRef][i] & (1ul << j)) != 0) 
-                        break; 
-                    }
-                    for (j = bitRef - 8; j >= 0; j -= 8) 
-                    { 
-                      validMoves |= (1ul << j); 
-                      if ((occupancyVariation[bitRef][i] & (1ul << j)) != 0) 
-                        break; }
-                    for (j = bitRef + 1; j % 8 != 0; j++) 
-                    { 
-                      validMoves |= (1ul << j); 
-                      if ((occupancyVariation[bitRef][i] & (1ul << j)) != 0) 
-                        break; 
-                    }
-                    for (j = bitRef - 1; j % 8 != 7 && j >= 0; j--) 
-                    { 
-                      validMoves |= (1ul << j); 
-                      if ((occupancyVariation[bitRef][i] & (1ul << j)) != 0) 
-                        break; 
-                    }
-                    
-                    MagicMovesRook[bitRef,magicIndex] = validMoves;
-                }
-                else
-                {
-                    magicIndex = (int)((occupancyVariation[bitRef][i] * MagicNumberBishop[bitRef]) >> magicNumberShiftsBishop[bitRef]);
-
-                    for (j = bitRef + 9; j % 8 != 0 && j <= 63; j += 9) 
-                    { 
-                      validMoves |= (1ul << j); 
-                      if ((occupancyVariation[bitRef][i] & (1ul << j)) != 0) 
-                        break; 
-                    }
-                    for (j = bitRef - 9; j % 8 != 7 && j >= 0; j -= 9) 
-                    { 
-                      validMoves |= (1ul << j); 
-                      if ((occupancyVariation[bitRef][i] & (1ul << j)) != 0) 
-                        break; 
-                    }
-                    for (j=bitRef+7; j%8!=7 && j<=63; j+=7) 
-                    {
-                      validMoves |= (1ul << j);
-                      if ((occupancyVariation[bitRef][i] & (1ul << j)) != 0) 
-                        break; 
-                    }
-                    for (j=bitRef-7; j%8!=0 && j>=0; j-=7) 
-                    {
-                      validMoves |= (1ul << j);
-                      if ((occupancyVariation[bitRef][i] & (1ul << j)) != 0) 
-                        break; 
-                    }
-
-                    MagicMovesBishop[bitRef,magicIndex] = validMoves;
-                }
-            }
-        }
-    }
-    */
-
-
-
-
-
-
+   
     #region GetIndexOfFirstBit
 
     static int[] firstBitTable = {

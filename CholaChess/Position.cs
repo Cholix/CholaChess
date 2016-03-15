@@ -140,7 +140,7 @@ namespace CholaChess
       ulong bbEmptySquare = ~bbAllPieces;
       int myKingSquareIndex = BitBoard.GetIndexOfFirstBit(Pieces[ColorToMove | BitBoard.PIECE_TYPE_KING]);
       
-      #region GenerateKingMoves
+      #region Generate King Moves
 
       fromSquareIndex = myKingSquareIndex;
       bbToSquares = BitBoard.KingAttack[myKingSquareIndex] & bbNotMyPieces;
@@ -151,6 +151,9 @@ namespace CholaChess
       }
 
       if(CastleQueenside[ColorToMove] 
+        && ((bbAllPieces & BitBoard.Square[myKingSquareIndex - 1]) == 0)
+        && ((bbAllPieces & BitBoard.Square[myKingSquareIndex - 2]) == 0)
+        && ((bbAllPieces & BitBoard.Square[myKingSquareIndex - 3]) == 0)
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex)
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex - 1)
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex - 2))
@@ -159,6 +162,8 @@ namespace CholaChess
       }
 
       if (CastleKingside[ColorToMove]
+        && ((bbAllPieces & BitBoard.Square[myKingSquareIndex + 1]) == 0)
+        && ((bbAllPieces & BitBoard.Square[myKingSquareIndex + 2]) == 0)
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex)
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex + 1)
         && !IsSquareAttacked(1 - ColorToMove, myKingSquareIndex + 2))
@@ -166,9 +171,9 @@ namespace CholaChess
         moveList.AddMove(myKingSquareIndex, myKingSquareIndex + 2);
       }
 
-      #endregion GenerateKingMoves
+      #endregion Generate King Moves
 
-      #region GenerateRook&QueenMoves
+      #region Generate Rook & Queen Moves
             
       ulong bbRooksAndQuens = Pieces[ColorToMove | BitBoard.PIECE_TYPE_ROOK] | Pieces[ColorToMove | BitBoard.PIECE_TYPE_QUEEN];
       while (bbRooksAndQuens != 0)
@@ -182,9 +187,9 @@ namespace CholaChess
         }
       }
 
-      #endregion GenerateRook&QueenMoves
+      #endregion Generate Rook & Queen Moves
 
-      #region GenerateBishop&QueenMoves
+      #region Generate Bishop & Queen Moves
 
       ulong bbBishopsAndQuens = Pieces[ColorToMove | BitBoard.PIECE_TYPE_BISHOP] | Pieces[ColorToMove | BitBoard.PIECE_TYPE_QUEEN];
       while (bbBishopsAndQuens != 0)
@@ -198,9 +203,9 @@ namespace CholaChess
         }
       }
 
-      #endregion GenerateBishop&QueenMoves
+      #endregion Generate Bishop & Queen Moves
 
-      #region GenerateKnightMoves
+      #region Generate Knight Moves
 
       ulong knights = Pieces[ColorToMove | BitBoard.PIECE_TYPE_KNIGHT];
 
@@ -215,9 +220,9 @@ namespace CholaChess
         }
       }
 
-      #endregion GenerateKnightMoves
+      #endregion Generate Knight Moves
 
-      #region GeneratePawnMoves
+      #region Generate Pawn Moves
 
       ulong pawns = Pieces[ColorToMove | BitBoard.PIECE_TYPE_PAWN];
 
@@ -306,7 +311,7 @@ namespace CholaChess
         #endregion Black pawn
       }
 
-      #endregion GeneratePawnMoves
+      #endregion Generate Pawn Moves
 
       return moveList;
     }
